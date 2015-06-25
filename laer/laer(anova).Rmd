@@ -1,0 +1,180 @@
+---
+title: "LAER(ANOVA)"
+author: "edmar.teixeira@me.com"
+date: "Thursday, February 26, 2015"
+output: html_document
+---
+
+# Data from Fodder Beet Emmanuel's P21 trials 2012
+# ANOVA of area expansion and senescence coefficient between irrigated an drain-fed plots
+
+```{r}
+library(agricolae)
+```
+
+
+
+Change dir
+```{r, echo =FALSE, include=FALSE}
+#Change the directory workspace
+setwd("C:\\MyPfrBackUp\\My papers\\2015-Emmanuels_FodderBeet_Canopy\\Stats\\laer")
+```
+
+Read file
+```{r, echo =FALSE, include=FALSE}
+# Read files from stats folder load it to a variable
+info  = read.table("laer(anova).txt", sep="\t", header=T)
+info
+```
+
+sort factors
+```{r, echo =FALSE, include=FALSE}
+info$Rep <- as.factor(info$Rep)
+info$NitroTreat <- as.factor(info$NitroTreat)
+```
+
+Summary
+
+Here's the data
+```{r}
+summary (info)
+info
+```
+
+
+# Experiment A (LAER)
+
+Expansion rates in EXP A
+
+```{r, echo =FALSE, include=TRUE}
+expA = subset (info, Experiment == "A")
+expA
+anova = aov(LAER ~ WaterTreat+Rep, data = expA)
+summary(anova)
+
+# run a Tukey test if there are differences
+TukeyHSD(anova)
+
+boxplot(expA$LAER ~ expA$WaterTreat, names.arg=c("Rainfed","Irrigated"))
+round(mean(expA$LAER[expA$WaterTreat=="RainFed"]), digits = 4)
+
+hsd = HSD.test(anova, "WaterTreat", alpha = 0.05)
+hsd
+# HSD
+hsd$statistics$HSD
+
+```
+
+
+### Water stress reduced LAER from **`r round(mean(expA$LAER[expA$WaterTreat=="Irrigated"]), digits = 4)    `** in irrigated to **`r round(mean(expA$LAER[expA$WaterTreat=="RainFed"]), digits = 4)    `** in rain-fed
+
+
+## Experiment A (LASR)
+
+Senescence rates in experiment A
+
+```{r}
+expA = subset (info, Experiment == "A")
+expA
+anova = aov(LASR ~ WaterTreat+Rep, data = expA)
+summary(anova)
+
+# run a Tukey test if there are differences
+TukeyHSD(anova)
+
+boxplot(expA$LASR ~ expA$WaterTreat, names.arg=c("Rainfed","Irrigated"))
+
+hsd = HSD.test(anova, "WaterTreat", alpha = 0.05)
+hsd
+# HSD
+hsd$statistics$HSD
+
+```
+
+
+### Water stress **increased** LASR (P<0.028) from **`r round(mean(expA$LASR[expA$WaterTreat=="Irrigated"]), digits = 4)    `** in irrigated to **`r round(mean(expA$LASR[expA$WaterTreat=="RainFed"]), digits = 4)    `** in rain-fed
+
+
+# Experiment B (LAER)
+
+Expansion rates using the late data of max LAI (April)
+
+```{r, echo =FALSE, include=TRUE}
+expB = subset (info, Experiment == "B")
+expB
+anova = aov(LAER ~ WaterTreat*NitroTreat+Rep, data = expB)
+summary(anova)
+
+# run a Tukey test if there are differences
+TukeyHSD(anova)
+
+boxplot(expB$LAER ~ expB$WaterTreat*expB$NitroTreat, names.arg=c("Rainfed\nNito","Irrigated","",""), las=2)
+
+par(mfrow=c(1,2))
+boxplot(expB$LAER ~ expB$WaterTreat, las=2)
+
+boxplot(expB$LAER ~ expB$NitroTreat, las=2)
+
+hsd <- HSD.test(anova, c("NitroTreat", "WaterTreat"), group=TRUE, alpha = 0.05)
+hsd
+# HSD
+hsd$statistics$HSD
+
+```
+
+# Experiment B (LAER2)
+
+Expansion rates using an early date of reaching LAI max (February) because the effect of water is only evident in the first part of the regrowth (when N effect is negligible) as there was rain in the end when N effect appeared
+
+
+```{r, echo =FALSE, include=TRUE}
+expB = subset (info, Experiment == "B")
+expB
+anova = aov(LAER2 ~ WaterTreat*NitroTreat+Rep, data = expB)
+summary(anova)
+
+# run a Tukey test if there are differences
+TukeyHSD(anova)
+
+boxplot(expB$LAER2 ~ expB$WaterTreat*expB$NitroTreat, names.arg=c("Rainfed\nNito","Irrigated","",""), las=2)
+
+par(mfrow=c(1,2))
+boxplot(expB$LAER2 ~ expB$WaterTreat, las=2)
+
+boxplot(expB$LAER2 ~ expB$NitroTreat, las=2)
+
+
+hsd <- HSD.test(anova, c("NitroTreat", "WaterTreat"), group=TRUE, alpha = 0.05)
+hsd
+# HSD
+hsd$statistics$HSD
+
+```
+
+
+## Experiment B (LASR)
+```{r, echo=FALSE, include=TRUE}
+expB = subset (info, Experiment == "B")
+expB
+anova = aov(LASR ~ WaterTreat*NitroTreat+Rep, data = expB)
+summary(anova)
+
+# run a Tukey test if there are differences
+TukeyHSD(anova)
+
+boxplot(expB$LASR ~ expB$WaterTreat*expB$NitroTreat, names.arg=c("Rainfed\nNito","Irrigated","",""), las=2)
+
+par(mfrow=c(1,2))
+boxplot(expB$LASR ~ expB$WaterTreat, las=2)
+
+boxplot(expB$LASR ~ expB$NitroTreat, las=2)
+
+
+hsd <- HSD.test(anova, c("NitroTreat", "WaterTreat"), group=TRUE, alpha = 0.05)
+hsd
+# HSD
+hsd$statistics$HSD
+```
+
+
+

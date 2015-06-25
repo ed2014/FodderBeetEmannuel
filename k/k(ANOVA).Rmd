@@ -1,0 +1,65 @@
+---
+title: "ExtCoeff(ANOVA)"
+author: "edmar.teixeira@me.com"
+date: "Thursday, February 26, 2015"
+output: html_document
+---
+
+# Data from Fodder Beet Emmanuel's P21 trials 2012
+# ANOVA of extinction coefficient between irrigated an drain-fed plots
+
+## Change dir
+```{r}
+#Change the directory workspace
+setwd("C:\\MyPfrBackUp\\My papers\\2015-Emmanuels_FodderBeet_Canopy\\Stats\\k")
+```
+
+## Read file
+```{r}
+# Read files from stats folder load it to a variable
+info  = read.table("k(ANOVA).txt", sep="\t", header=T)
+```
+
+## Remove extra variables
+```{r}
+info <- subset (info, Variable != "R2")
+```
+
+## sort factors
+```{r}
+info$Block <- as.factor(info$Block)
+info$Treat <- as.factor(info$Treat)
+```
+
+## Summary
+```{r}
+summary (info)
+info
+```
+
+
+## ANOVA
+```{r}
+anova = aov(Value ~ Treat+Block, data = info)
+summary(anova)
+```
+
+## Tukey
+```{r}
+# run a Tukey test if there are differences
+TukeyHSD(anova)
+```
+
+##Print graph
+```{r}
+boxplot(info$Value ~ info$Treat, names.arg=c("Rainfed","Irrigated"))
+```
+
+##Value of average k 
+```{r, echo =FALSE}
+print(paste0("Mean k is ",round(mean(info$Value), digits = 2)))
+```
+
+## Conclusion
+
+A similar k of 0.74 (P<0.11) was found for both treatments although there was a trend of having higher k in rain-fed crops. 
